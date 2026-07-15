@@ -17,6 +17,31 @@ products:
     price: 30
     sku: 999921312423312
     description: awesome
+  - name: orange-updated
+    price: 12
+    sku: 123321123
+    description: updated right after creation
+    id: 5
+  - name: orange-updated
+    price: 12
+    sku: 123321123
+    description: updated right after creation
+    id: 5
+  - name: orange-updated
+    price: 12
+    sku: 123321123
+    description: updated right after creation
+    id: 6
+  - name: orange-updated
+    price: 12
+    sku: 123321123
+    description: updated right after creation
+    id: 7
+  - name: orange-updated
+    price: 12
+    sku: 123321123
+    description: updated right after creation
+    id: 8
 orders:
   - id: 1
     name: order1
@@ -27,6 +52,12 @@ orders:
   - id: 3
     name: order2
     sku: 999921312423312
+  - name: order-new
+    sku: 111222333
+    id: 4
+  - name: order-new-updated
+    sku: 111222333
+    id: 5
 users:
   - id: 1
     firstName: Alice
@@ -101,15 +132,6 @@ users:
     status: active
     level: consumer
   - id: 9
-    firstName: asdasd
-    lastName: asd
-    email: asdasd.smith@gmail.com
-    dateOfBirth: 1997-10-31
-    emailVerified: false
-    signUpDate: 2019-08-24
-    status: active
-    level: consumer
-  - id: 10
     firstName: asdasd
     lastName: asd
     email: asdasd.smith@gmail.com
