@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test-api:
     runs-on: ubuntu-latest
@@ -20,27 +25,51 @@ jobs:
       with:
         node-version: 18
 
-   
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
-  
+    - name: Fix exec permissions on yaml-server
+      run: chmod +x node_modules/yaml-server/src/index.js node_modules/.bin/* 2>/dev/null || true
+
     - name: Start Local API Server
       run: |
-        nohup npm run tern-on-api > server.log 2>&1 &
+        cp mockApi/db_back_up.yaml mockApi/db_stage.yaml
+        nohup node node_modules/yaml-server/src/index.js --hotReload=off --autoStart=off --port 3000 --database ./mockApi/db_stage.yaml > server.log 2>&1 &
 
-    
     - name: Wait for server to start
       run: |
         echo "Waiting for server to be ready on port 3000..."
         for i in {1..10}; do
-          curl -s http://localhost:3000/products && exit 0
+          curl -s http://localhost:3000/products > /dev/null && exit 0
           sleep 3
         done
         echo "Server failed to start!" && cat server.log && exit 1
 
-  
-    - name: Install Newman and run collection
+    - name: Install Newman and HTML reporter
+      run: npm install -g newman newman-reporter-htmlextra
+
+    - name: Run store.collection.json
       run: |
-        npm install -g newman
-        newman run store.collection.json
+        mkdir -p public
+        newman run store.collection.json \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export public/index.html
+
+    - name: Upload Pages artifact
+      if: always()
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: public
+
+  deploy-pages:
+    name: Publish report to GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: test-api
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
