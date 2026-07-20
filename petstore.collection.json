@@ -447,6 +447,27 @@
 				},
 				{
 					"name": "Finds Pets by tags",
+          "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('ASSERT: Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test('ASSERT: Response time is less than 500ms', function () {",
+                "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                "});",
+                "",
+                "pm.test('ASSERT: Content-Type is present', function () {",
+                "    pm.response.to.have.header('Content-Type');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
 					"request": {
 						"auth": {
 							"type": "noauth"

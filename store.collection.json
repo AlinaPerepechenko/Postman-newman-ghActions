@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "2b4500dd-577b-4d24-8dc6-27924014fa57",
+    "_postman_id": "e8bb0fc0-bffb-405c-b5d3-a933972527b0",
     "name": "store",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52829518",
-    "_collection_link": "https://go.postman.co/collection/52829518-2b4500dd-577b-4d24-8dc6-27924014fa57?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/52829518-e8bb0fc0-bffb-405c-b5d3-a933972527b0?source=collection_link"
   },
   "item": [
     {
@@ -79,17 +79,12 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const productSchema = {\r",
-                  "    \"type\": \"object\",\r",
-                  "    \"required\": [\"id\", \"name\", \"price\", \"sku\", \"description\"],\r",
-                  "    \"properties\": {\r",
-                  "        \"id\": { \"type\": \"number\" },\r",
-                  "        \"name\": { \"type\": \"string\" },\r",
-                  "        \"price\": { \"type\": \"number\" },\r",
-                  "        \"sku\": { \"type\": \"number\" },\r",
-                  "        \"description\": { \"type\": \"string\" }\r",
-                  "    }\r",
-                  "};\r",
+                  "const productSchema = JSON.parse(pm.collectionVariables.get(\"productSchema\"));\r",
+                  "\r",
+                  "\r",
+                  "pm.test('ASSERT: response matches product schema', function () {\r",
+                  "    pm.response.to.have.jsonSchema(productSchema);\r",
+                  "});\r",
                   "\r",
                   "pm.test('ASSERT: status code is 200', function () {\r",
                   "    pm.response.to.have.status(200);\r",
@@ -99,9 +94,7 @@
                   "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
                   "});\r",
                   "\r",
-                  "pm.test('ASSERT: response matches product schema', function () {\r",
-                  "    pm.response.to.have.jsonSchema(productSchema);\r",
-                  "});\r",
+                  "\r",
                   ""
                 ],
                 "type": "text/javascript",
@@ -126,6 +119,57 @@
                 {
                   "key": "id",
                   "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List products with pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('ASSERT: pagination limit works', function () {\r",
+                  "    const responseData = pm.response.json();\r",
+                  "    pm.expect(responseData.length).to.eql(3); \r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?page=1&limit=3&sortKey=name&sortOrder=ASC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "3"
+                },
+                {
+                  "key": "sortKey",
+                  "value": "name"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "ASC"
                 }
               ]
             }
@@ -758,13 +802,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/users/10",
+              "raw": "{{baseUrl}}/users/{{created_user_id}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "users",
-                "10"
+                "{{created_user_id}}"
               ]
             }
           },
@@ -799,6 +843,10 @@
     {
       "key": "baseUrl",
       "value": "http://localhost:3000"
+    },
+    {
+      "key": "productSchema",
+      "value": "{\"type\": \"object\", \"properties\": {\"id\": {\"type\": \"number\"}, \"name\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}"
     }
   ]
 }
